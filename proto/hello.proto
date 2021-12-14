@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package hello;
+
+import "partial.proto";
+
+option go_package = "grpc_example/genproto";
+
+service Hello {
+  rpc Greet(Empty) returns (Empty) {}
+  rpc GetExample(GetExampleRequest) returns (GetExampleResponse) {}
+}
+
+message Empty{}
+
+/*
+ * message: 構造体(KeyValue)
+ */
+message GetExampleRequest {
+  // 基本データ型
+  double some_double = 1;
+  float some_float = 2;
+  int32 some_int32 = 3;
+  int64 some_int64 = 4;
+  uint32 some_uint32 = 5;
+  uint64 some_uint64 = 6;
+  sint32 some_sint32 = 7;
+  sint64 some_sint64 = 8;
+  fixed32 some_fixed32 = 9;
+  fixed64 some_fixed64 = 10;
+  sfixed32 some_sfixed32 = 11;
+  sfixed64 some_sfixed64 = 12;
+  bool some_bool = 13;
+  string some_string = 14;
+  bytes some_bytes = 15;
+
+  // ネストしたmessage
+  message SomeMessage {
+    int32 hoge = 1;
+  }
+  SomeMessage some_message = 16;
+
+  // importしたmessage
+  SomePartial some_partial = 17;
+
+  // enum
+  enum SomeEnum {
+    UNKNOWN = 0;
+    HOGE = 1;
+    FUGA = 2;
+  }
+  SomeEnum some_enum = 18;
+
+  // 配列
+  repeated string some_repeated_string = 19;
+
+  oneof some_oneof {
+    int32 oneof_int32 = 20;
+    string oneof_string = 21;
+  }
+}
+
+message GetExampleResponse {
+  // 基本データ型
+  double some_double = 1;
+  float some_float = 2;
+  int32 some_int32 = 3;
+  int64 some_int64 = 4;
+  uint32 some_uint32 = 5;
+  uint64 some_uint64 = 6;
+  sint32 some_sint32 = 7;
+  sint64 some_sint64 = 8;
+  fixed32 some_fixed32 = 9;
+  fixed64 some_fixed64 = 10;
+  sfixed32 some_sfixed32 = 11;
+  sfixed64 some_sfixed64 = 12;
+  bool some_bool = 13;
+  string some_string = 14;
+  bytes some_bytes = 15;
+
+  // ネストしたmessage
+  message SomeMessage {
+    int32 hoge = 1;
+  }
+  SomeMessage some_message = 16;
+
+  // importしたmessage
+  SomePartial some_partial = 17;
+
+  // enum
+  enum SomeEnum {
+    UNKNOWN = 0;
+    HOGE = 1;
+    FUGA = 2;
+  }
+  SomeEnum some_enum = 18;
+
+  // 配列
+  repeated string some_repeated_string = 19;
+
+  oneof some_oneof {
+    int32 oneof_int32 = 20;
+    string oneof_string = 21;
+  }
+}
