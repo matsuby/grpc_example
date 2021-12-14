@@ -22,5 +22,12 @@ go mod tidy
 go run server/main.go server/server.go
 
 # クライアントからgRPCの呼び出し
-go run client/client.go
+go run client/unary/main.go
+go run client/streaming/main.go
+
+# grpcurlを使った確認
+go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+grpcurl -plaintext localhost:50051 list grpc_example.Hello
+grpcurl -plaintext localhost:50051 grpc_example.Hello/Greet
+grpcurl -plaintext -d '{"msg": "test"}' localhost:50051 grpc_example.Hello/StreamExample
 ```

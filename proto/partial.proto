@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package hello;
+package grpc_example;
 
 option go_package = "grpc_example/genproto";
 

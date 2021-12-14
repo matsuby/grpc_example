@@ -33,7 +33,7 @@ func NewHelloClient(cc grpc.ClientConnInterface) HelloClient {
 
 func (c *helloClient) Greet(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/hello.Hello/Greet", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc_example.Hello/Greet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *helloClient) Greet(ctx context.Context, in *Empty, opts ...grpc.CallOpt
 
 func (c *helloClient) GetExample(ctx context.Context, in *GetExampleRequest, opts ...grpc.CallOption) (*GetExampleResponse, error) {
 	out := new(GetExampleResponse)
-	err := c.cc.Invoke(ctx, "/hello.Hello/GetExample", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc_example.Hello/GetExample", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *helloClient) GetExample(ctx context.Context, in *GetExampleRequest, opt
 }
 
 func (c *helloClient) StreamExample(ctx context.Context, in *StreamExampleRequest, opts ...grpc.CallOption) (Hello_StreamExampleClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Hello_ServiceDesc.Streams[0], "/hello.Hello/StreamExample", opts...)
+	stream, err := c.cc.NewStream(ctx, &Hello_ServiceDesc.Streams[0], "/grpc_example.Hello/StreamExample", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func _Hello_Greet_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hello.Hello/Greet",
+		FullMethod: "/grpc_example.Hello/Greet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HelloServer).Greet(ctx, req.(*Empty))
@@ -145,7 +145,7 @@ func _Hello_GetExample_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hello.Hello/GetExample",
+		FullMethod: "/grpc_example.Hello/GetExample",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HelloServer).GetExample(ctx, req.(*GetExampleRequest))
@@ -178,7 +178,7 @@ func (x *helloStreamExampleServer) Send(m *StreamExampleResponse) error {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Hello_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hello.Hello",
+	ServiceName: "grpc_example.Hello",
 	HandlerType: (*HelloServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
