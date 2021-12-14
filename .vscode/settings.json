@@ -1,0 +1,20 @@
+{
+  "editor.formatOnSave": true,
+  "[go]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.defaultFormatter": "golang.go",
+  },
+  "[proto3]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "protoc": {
+    "options": [
+      "--proto_path=proto",
+    ]
+  },
+  "clang-format.style": "google",
+  "go.toolsEnvVars": {
+    "GOFLAGS": "-tags=wireinject"
+},
+}

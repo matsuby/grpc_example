@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type HelloClient interface {
 	Greet(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
 	GetExample(ctx context.Context, in *GetExampleRequest, opts ...grpc.CallOption) (*GetExampleResponse, error)
+	StreamExample(ctx context.Context, in *StreamExampleRequest, opts ...grpc.CallOption) (Hello_StreamExampleClient, error)
 }
 
 type helloClient struct {
@@ -48,12 +49,45 @@ func (c *helloClient) GetExample(ctx context.Context, in *GetExampleRequest, opt
 	return out, nil
 }
 
+func (c *helloClient) StreamExample(ctx context.Context, in *StreamExampleRequest, opts ...grpc.CallOption) (Hello_StreamExampleClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Hello_ServiceDesc.Streams[0], "/hello.Hello/StreamExample", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloStreamExampleClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Hello_StreamExampleClient interface {
+	Recv() (*StreamExampleResponse, error)
+	grpc.ClientStream
+}
+
+type helloStreamExampleClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloStreamExampleClient) Recv() (*StreamExampleResponse, error) {
+	m := new(StreamExampleResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HelloServer is the server API for Hello service.
 // All implementations must embed UnimplementedHelloServer
 // for forward compatibility
 type HelloServer interface {
 	Greet(context.Context, *Empty) (*Empty, error)
 	GetExample(context.Context, *GetExampleRequest) (*GetExampleResponse, error)
+	StreamExample(*StreamExampleRequest, Hello_StreamExampleServer) error
 	mustEmbedUnimplementedHelloServer()
 }
 
@@ -66,6 +100,9 @@ func (UnimplementedHelloServer) Greet(context.Context, *Empty) (*Empty, error) {
 }
 func (UnimplementedHelloServer) GetExample(context.Context, *GetExampleRequest) (*GetExampleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExample not implemented")
+}
+func (UnimplementedHelloServer) StreamExample(*StreamExampleRequest, Hello_StreamExampleServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamExample not implemented")
 }
 func (UnimplementedHelloServer) mustEmbedUnimplementedHelloServer() {}
 
@@ -116,6 +153,27 @@ func _Hello_GetExample_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Hello_StreamExample_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamExampleRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(HelloServer).StreamExample(m, &helloStreamExampleServer{stream})
+}
+
+type Hello_StreamExampleServer interface {
+	Send(*StreamExampleResponse) error
+	grpc.ServerStream
+}
+
+type helloStreamExampleServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloStreamExampleServer) Send(m *StreamExampleResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Hello_ServiceDesc is the grpc.ServiceDesc for Hello service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +190,12 @@ var Hello_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Hello_GetExample_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamExample",
+			Handler:       _Hello_StreamExample_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "hello.proto",
 }
